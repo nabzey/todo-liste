@@ -2,23 +2,23 @@ import { Users } from "@prisma/client";
 import { Ilogin } from "../repository/UserRepository";
 export declare class UsersService {
     findUsers(): Promise<{
-        name: string;
         id: number;
+        name: string;
         email: string;
         login: string;
         password: string;
     }[]>;
     findUser(id: number): Promise<(id: number) => Promise<Users | null>>;
     create(users: Users): Promise<{
-        name: string;
         id: number;
+        name: string;
         email: string;
         login: string;
         password: string;
     }>;
     update(id: number, data: Partial<Users>): Promise<{
-        name: string;
         id: number;
+        name: string;
         email: string;
         login: string;
         password: string;
@@ -26,8 +26,8 @@ export declare class UsersService {
     deleteuser(id: number): Promise<void>;
     loginUser(perso: Ilogin): Promise<{
         users: {
-            name: string;
             id: number;
+            name: string;
             email: string;
             login: string;
             password: string;
@@ -39,8 +39,8 @@ export declare class UsersService {
         accesToken: string;
     }>;
     Update(id: number, data: Partial<Users>): Promise<{
-        name: string;
         id: number;
+        name: string;
         email: string;
         login: string;
         password: string;

@@ -1,13 +1,24 @@
- import express from 'express';
-import userroute from './routes/UserRoute'
- import tacheroute from './routes/Tacherouter'
- import authenticate from './middlewares/Authmiddleware';
- 
- const app = express();
+import express from 'express';
+import cors from 'cors';
+import userroute from './routes/UserRoute';
+import tacheroute from './routes/Tacherouter';
+import authenticate from './middlewares/Authmiddleware';
 
+const app = express();
 
- app.use(express.json());
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
- app.use('/users',userroute)
- app.use('/taches',authenticate,tacheroute)
- export default app;
+// Middlewares
+app.use(cors({
+  origin: FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
+
+app.use(express.json());
+
+// Routes
+app.use('/users', userroute);
+app.use('/taches', authenticate, tacheroute);
+
+export default app;
