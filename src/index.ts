@@ -6,7 +6,7 @@ import authenticate from './middlewares/Authmiddleware';
 
 const app = express();
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5174";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 // Middlewares
 app.use(cors({

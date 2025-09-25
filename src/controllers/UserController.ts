@@ -47,7 +47,7 @@ export class UserController {
 
      async login(req: Request, res: Response){
       const verif = schemalogin.safeParse(req.body)
-      if(!verif.success) return await res.status(401).json({message:"invalide",error: verif.error.format()});
+      if(!verif.success) return res.status(401).json({message:"invalide",error: verif.error.format()});
       const a= await service.loginUser(req.body)
       res.status(200).json({
         message :'reussi',

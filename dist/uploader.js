@@ -5,23 +5,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
-// Configuration du stockage
+const fs_1 = __importDefault(require("fs"));
+const uploadDirPhoto = 'uploads/';
+const uploadDirAudio = 'uploads/audio/';
+if (!fs_1.default.existsSync(uploadDirPhoto))
+    fs_1.default.mkdirSync(uploadDirPhoto);
+if (!fs_1.default.existsSync(uploadDirAudio))
+    fs_1.default.mkdirSync(uploadDirAudio, { recursive: true });
 const storage = multer_1.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // dossier où les fichiers seront stockés
+    destination: (req, file, cb) => {
+        if (file.fieldname === 'photo') {
+            cb(null, uploadDirPhoto);
+        }
+        else if (file.fieldname === 'audio') {
+            cb(null, uploadDirAudio);
+        }
+        else {
+            cb(new Error('Type de fichier non autorisé'), '');
+        }
     },
-    filename: function (req, file, cb) {
+    filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + path_1.default.extname(file.originalname));
     }
 });
-// Filtre pour accepter uniquement les images
+// Filtre pour accepter images et audios
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    if (file.fieldname === 'photo' && file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    }
+    else if (file.fieldname === 'audio' && file.mimetype.startsWith('audio/')) {
         cb(null, true);
     }
     else {
-        cb(new Error('Seules les images sont autorisées !'));
+        cb(new Error('Seules les images et audios sont autorisés !'));
     }
 };
 const upload = (0, multer_1.default)({ storage, fileFilter });

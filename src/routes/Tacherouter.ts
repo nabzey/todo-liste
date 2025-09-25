@@ -7,7 +7,14 @@ const cont = new TacheController();
 const router = Router();
 
 router.get('/',cont.getAll);
-router.post('/', upload.single('photo'), cont.create);
+router.post(
+  '/',
+  upload.fields([
+    { name: 'photo', maxCount: 1 },
+    { name: 'audio', maxCount: 1 },
+  ]),
+  cont.create
+);
 router.get('/:id',cont.getOne);
 router.put('/:id', upload.single('photo'), PerMiddleware.permi, cont.updateOne)
 router.delete('/:id',PerMiddleware.permi,cont.Tachedelete)

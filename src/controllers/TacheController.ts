@@ -13,13 +13,14 @@ async getAll(req: Request, res: Response) {
   try {
     const data = await service.findAll();
     const newData = data.map(task => {
+      let result = { ...task };
       if (task.photoUrl) {
-        return {
-          ...task,
-          photoUrl: `${req.protocol}://${req.get('host')}${task.photoUrl}`
-        };
+        result.photoUrl = `${req.protocol}://${req.get('host')}${task.photoUrl}`;
       }
-      return task;
+      if (task.audioUrl) {
+        result.audioUrl = `${req.protocol}://${req.get('host')}${task.audioUrl}`;
+      }
+      return result;
     });
     return res.status(200).json(newData);    
   } catch (error) {
@@ -27,38 +28,45 @@ async getAll(req: Request, res: Response) {
   }
 }
 
-  async create(req:AuthRequest, res: Response){
-   try {
-    const user =req.user
-    if(!user) return res.status(401).json({message : 'user non trouve'})
+ async create(req: AuthRequest, res: Response) {
+  try {
+    const user = req.user;
+    if (!user) return res.status(401).json({ message: 'user non trouve' });
+
     let photoUrl: string | null = null;
     let audioUrl: string | null = null;
-    if (req.files && Array.isArray(req.files)) {
-      for (const file of req.files) {
-        if (file.fieldname === 'photo') photoUrl = `/uploads/${file.filename}`;
-        if (file.fieldname === 'audio') audioUrl = `/uploads/audio/${file.filename}`;
+
+    if (req.files) {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      if (files.photo && Array.isArray(files.photo) && files.photo.length > 0 && files.photo[0]) {
+        photoUrl = `/uploads/${files.photo[0].filename}`;
       }
-    } else if (req.file) {
-      if (req.file.fieldname === 'photo') photoUrl = `/uploads/${req.file.filename}`;
-      if (req.file.fieldname === 'audio') audioUrl = `/uploads/audio/${req.file.filename}`;
+      if (files.audio && Array.isArray(files.audio) && files.audio.length > 0 && files.audio[0]) {
+        audioUrl = `/uploads/audio/${files.audio[0].filename}`;
+      }
     }
+
     const tacheData = {
       titre: req.body.titre,
       description: req.body.description,
-      photoUrl: photoUrl,
-      audioUrl: audioUrl,
+      photoUrl,
+      audioUrl,
       statut: req.body.statut || 'EN_COURS'
     };
+
     const tache = sechemTache.parse(tacheData);
+
     const a = await service.createTache({
       ...tacheData,
-      usersid: user?.id
+      usersid: user.id
     });
-    res.json(a)
-   } catch (error: any) {
-    res.status(400).json({error : error.message})
-   } 
+
+    res.json(a);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
+}
+
 
   async getOne(req:Request<{id:string}>, res: Response){
     const idparams = req.params.id
