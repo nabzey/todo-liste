@@ -39,6 +39,7 @@ model Taches {
   users Users @relation(fields: [usersid],references: [id])
   autoriseUser Association[] 
   photoUrl String?
+  audioUrl String?
 }
 
 enum Choix { 

@@ -9,7 +9,7 @@ const UserRoute_1 = __importDefault(require("./routes/UserRoute"));
 const Tacherouter_1 = __importDefault(require("./routes/Tacherouter"));
 const Authmiddleware_1 = __importDefault(require("./middlewares/Authmiddleware"));
 const app = (0, express_1.default)();
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5174";
 // Middlewares
 app.use((0, cors_1.default)({
     origin: FRONTEND_URL,

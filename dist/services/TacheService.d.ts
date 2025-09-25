@@ -4,33 +4,37 @@ export declare class TacheService {
         id: number;
         titre: string;
         description: string;
+        photoUrl: string | null;
+        audioUrl: string | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
-        photoUrl: string | null;
     }[]>;
     createTache(tache: Omit<Taches, 'id'>): Promise<{
         id: number;
         titre: string;
         description: string;
+        photoUrl: string | null;
+        audioUrl: string | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
-        photoUrl: string | null;
     }>;
     findId(id: number): Promise<{
         id: number;
         titre: string;
         description: string;
+        photoUrl: string | null;
+        audioUrl: string | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
-        photoUrl: string | null;
     } | null>;
     updateId(id: number, data: Partial<Taches>): Promise<{
         id: number;
         titre: string;
         description: string;
+        photoUrl: string | null;
+        audioUrl: string | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
-        photoUrl: string | null;
     }>;
     deleteTache(id: number): Promise<void>;
 }

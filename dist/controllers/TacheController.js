@@ -8,7 +8,6 @@ class TacheController {
     async getAll(req, res) {
         try {
             const data = await service.findAll();
-            // Ajout du chemin complet pour les images
             const newData = data.map(task => {
                 if (task.photoUrl) {
                     return {
@@ -30,13 +29,26 @@ class TacheController {
             if (!user)
                 return res.status(401).json({ message: 'user non trouve' });
             let photoUrl = null;
-            if (req.file) {
-                photoUrl = `/uploads/${req.file.filename}`;
+            let audioUrl = null;
+            if (req.files && Array.isArray(req.files)) {
+                for (const file of req.files) {
+                    if (file.fieldname === 'photo')
+                        photoUrl = `/uploads/${file.filename}`;
+                    if (file.fieldname === 'audio')
+                        audioUrl = `/uploads/audio/${file.filename}`;
+                }
+            }
+            else if (req.file) {
+                if (req.file.fieldname === 'photo')
+                    photoUrl = `/uploads/${req.file.filename}`;
+                if (req.file.fieldname === 'audio')
+                    audioUrl = `/uploads/audio/${req.file.filename}`;
             }
             const tacheData = {
                 titre: req.body.titre,
                 description: req.body.description,
                 photoUrl: photoUrl,
+                audioUrl: audioUrl,
                 statut: req.body.statut || 'EN_COURS'
             };
             const tache = validate_1.sechemTache.parse(tacheData);
@@ -73,24 +85,36 @@ class TacheController {
         // Récupérer la tâche existante
         const existing = await service.findId(id);
         let photoUrl;
-        if (req.file) {
-            photoUrl = `/uploads/${req.file.filename}`;
+        let audioUrl;
+        if (req.files && Array.isArray(req.files)) {
+            for (const file of req.files) {
+                if (file.fieldname === 'photo')
+                    photoUrl = `/uploads/${file.filename}`;
+                if (file.fieldname === 'audio')
+                    audioUrl = `/uploads/audio/${file.filename}`;
+            }
         }
-        else if (req.body.photoUrl !== undefined &&
-            req.body.photoUrl !== null &&
-            req.body.photoUrl !== '' &&
-            req.body.photoUrl !== 'null') {
-            photoUrl = req.body.photoUrl;
+        else if (req.file) {
+            if (req.file.fieldname === 'photo')
+                photoUrl = `/uploads/${req.file.filename}`;
+            if (req.file.fieldname === 'audio')
+                audioUrl = `/uploads/audio/${req.file.filename}`;
         }
-        else if (existing && existing.photoUrl) {
+        // Conserver l'ancienne photo si aucune nouvelle n'est envoyée
+        if (!photoUrl && existing && existing.photoUrl)
             photoUrl = existing.photoUrl;
-        }
-        else {
+        // Conserver l'ancien audio si aucune nouvelle n'est envoyée
+        if (!audioUrl && existing && existing.audioUrl)
+            audioUrl = existing.audioUrl;
+        // Correction stricte des types pour Prisma
+        if (photoUrl === undefined)
             photoUrl = null;
-        }
+        if (audioUrl === undefined)
+            audioUrl = null;
         const updateData = {
             ...data.data,
             photoUrl,
+            audioUrl,
             statut: req.body.statut // permet de modifier l'état
         };
         const u = await service.updateId(id, updateData);
