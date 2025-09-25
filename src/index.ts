@@ -16,6 +16,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+// Pour servir les fichiers statiques du dossier uploads
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/users', userroute);

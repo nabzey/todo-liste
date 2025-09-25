@@ -8,7 +8,17 @@ class TacheController {
     async getAll(req, res) {
         try {
             const data = await service.findAll();
-            return res.status(200).json(data);
+            // Ajout du chemin complet pour les images
+            const newData = data.map(task => {
+                if (task.photoUrl) {
+                    return {
+                        ...task,
+                        photoUrl: `${req.protocol}://${req.get('host')}${task.photoUrl}`
+                    };
+                }
+                return task;
+            });
+            return res.status(200).json(newData);
         }
         catch (error) {
             return res.status(500).json({ message: "Erreur serveur", error });
@@ -18,11 +28,20 @@ class TacheController {
         try {
             const user = req.user;
             if (!user)
-                res.status(401).json({ message: 'user non trouve' });
-            const tache = validate_1.sechemTache.parse(req.body);
-            // if(!tache.success)return res.status(400).json({message :"error creation", error : tache.error.format});
+                return res.status(401).json({ message: 'user non trouve' });
+            let photoUrl = null;
+            if (req.file) {
+                photoUrl = `/uploads/${req.file.filename}`;
+            }
+            const tacheData = {
+                titre: req.body.titre,
+                description: req.body.description,
+                photoUrl: photoUrl,
+                statut: req.body.statut || 'EN_COURS'
+            };
+            const tache = validate_1.sechemTache.parse(tacheData);
             const a = await service.createTache({
-                ...req.body,
+                ...tacheData,
                 usersid: user?.id
             });
             res.json(a);
@@ -51,7 +70,30 @@ class TacheController {
         const data = validate_1.sechemTache.safeParse(req.body);
         if (!data.success)
             return res.status(404).json({ message: 'donnees requise' });
-        const u = await service.updateId(id, data.data);
+        // Récupérer la tâche existante
+        const existing = await service.findId(id);
+        let photoUrl;
+        if (req.file) {
+            photoUrl = `/uploads/${req.file.filename}`;
+        }
+        else if (req.body.photoUrl !== undefined &&
+            req.body.photoUrl !== null &&
+            req.body.photoUrl !== '' &&
+            req.body.photoUrl !== 'null') {
+            photoUrl = req.body.photoUrl;
+        }
+        else if (existing && existing.photoUrl) {
+            photoUrl = existing.photoUrl;
+        }
+        else {
+            photoUrl = null;
+        }
+        const updateData = {
+            ...data.data,
+            photoUrl,
+            statut: req.body.statut // permet de modifier l'état
+        };
+        const u = await service.updateId(id, updateData);
         res.status(200).json(u);
     }
     async Tachedelete(req, res) {

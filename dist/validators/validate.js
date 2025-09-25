@@ -5,6 +5,7 @@ const zod_1 = require("zod");
 exports.sechemTache = zod_1.z.object({
     titre: zod_1.z.string().min(1, 'le titre doit depasse un caractre'),
     description: zod_1.z.string().min(1, 'la description doit etre au moins 1 caracteres'),
+    photoUrl: zod_1.z.string().nullable().optional(),
     // statut : z.string().min(1,'encours par defaut')
 });
 exports.schemaUser = zod_1.z.object({

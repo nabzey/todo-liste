@@ -2,6 +2,7 @@ import { z } from 'zod';
 export declare const sechemTache: z.ZodObject<{
     titre: z.ZodString;
     description: z.ZodString;
+    photoUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, z.core.$strip>;
 export declare const schemaUser: z.ZodObject<{
     name: z.ZodString;

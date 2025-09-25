@@ -17,6 +17,8 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use(express_1.default.json());
+// Pour servir les fichiers statiques du dossier uploads
+app.use('/uploads', express_1.default.static('uploads'));
 // Routes
 app.use('/users', UserRoute_1.default);
 app.use('/taches', Authmiddleware_1.default, Tacherouter_1.default);

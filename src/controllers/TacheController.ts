@@ -12,8 +12,18 @@ export class TacheController{
  
 async getAll(req: Request, res: Response) {
   try {
-    const data = await service.findAll(); 
-    return res.status(200).json(data);    
+    const data = await service.findAll();
+    // Ajout du chemin complet pour les images
+    const newData = data.map(task => {
+      if (task.photoUrl) {
+        return {
+          ...task,
+          photoUrl: `${req.protocol}://${req.get('host')}${task.photoUrl}`
+        };
+      }
+      return task;
+    });
+    return res.status(200).json(newData);    
   } catch (error) {
     return res.status(500).json({ message: "Erreur serveur", error });
   }
@@ -22,13 +32,22 @@ async getAll(req: Request, res: Response) {
   async create(req:AuthRequest, res: Response){
    try {
     const user =req.user
-    if(!user) res.status(401).json({message : 'user non trouve'})
-    const tache = sechemTache.parse(req.body) 
-    // if(!tache.success)return res.status(400).json({message :"error creation", error : tache.error.format});
-    const a =await service.createTache({
-      ...req.body,
-        usersid : user?.id
-    })
+    if(!user) return res.status(401).json({message : 'user non trouve'})
+    let photoUrl: string | null = null;
+    if (req.file) {
+      photoUrl = `/uploads/${req.file.filename}`;
+    }
+    const tacheData = {
+      titre: req.body.titre,
+      description: req.body.description,
+      photoUrl: photoUrl,
+      statut: req.body.statut || 'EN_COURS'
+    };
+    const tache = sechemTache.parse(tacheData);
+    const a = await service.createTache({
+      ...tacheData,
+      usersid: user?.id
+    });
     res.json(a)
    } catch (error: any) {
     res.status(400).json({error : error.message})
@@ -51,7 +70,29 @@ async getAll(req: Request, res: Response) {
      if(Number.isNaN(id)) return res.json({message : 'nombre'})
       const data = sechemTache.safeParse(req.body)
      if(!data.success)return res.status(404).json({message:'donnees requise'})
-      const u = await service.updateId(id,data.data)
+      // Récupérer la tâche existante
+      const existing = await service.findId(id);
+      let photoUrl;
+      if (req.file) {
+        photoUrl = `/uploads/${req.file.filename}`;
+      } else if (
+        req.body.photoUrl !== undefined &&
+        req.body.photoUrl !== null &&
+        req.body.photoUrl !== '' &&
+        req.body.photoUrl !== 'null'
+      ) {
+        photoUrl = req.body.photoUrl;
+      } else if (existing && existing.photoUrl) {
+        photoUrl = existing.photoUrl;
+      } else {
+        photoUrl = null;
+      }
+      const updateData = {
+        ...data.data,
+        photoUrl,
+        statut: req.body.statut // permet de modifier l'état
+      };
+      const u = await service.updateId(id, updateData)
     res.status(200).json(u)
   }
 

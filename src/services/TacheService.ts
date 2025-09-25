@@ -1,4 +1,4 @@
- import { Taches } from '@prisma/client'
+import { Taches } from '@prisma/client'
 import {TacheRepository} from '../repository/TacheRepository'
 import { omit } from 'zod/mini'
 
@@ -8,7 +8,7 @@ export class TacheService{
  async findAll(){
     return await repos.findAll()
  }
- async createTache(tache:Taches){
+ async createTache(tache: Omit<Taches, 'id'>){
     return await repos.create(tache);
  }
 
