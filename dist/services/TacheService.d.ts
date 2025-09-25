@@ -6,6 +6,8 @@ export declare class TacheService {
         description: string;
         photoUrl: string | null;
         audioUrl: string | null;
+        dateDebut: Date | null;
+        dateFin: Date | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
     }[]>;
@@ -15,6 +17,8 @@ export declare class TacheService {
         description: string;
         photoUrl: string | null;
         audioUrl: string | null;
+        dateDebut: Date | null;
+        dateFin: Date | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
     }>;
@@ -24,6 +28,8 @@ export declare class TacheService {
         description: string;
         photoUrl: string | null;
         audioUrl: string | null;
+        dateDebut: Date | null;
+        dateFin: Date | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
     } | null>;
@@ -33,6 +39,8 @@ export declare class TacheService {
         description: string;
         photoUrl: string | null;
         audioUrl: string | null;
+        dateDebut: Date | null;
+        dateFin: Date | null;
         statut: import("@prisma/client").$Enums.Etat;
         usersid: number;
     }>;

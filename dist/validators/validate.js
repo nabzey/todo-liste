@@ -6,7 +6,9 @@ exports.sechemTache = zod_1.z.object({
     titre: zod_1.z.string().min(1, 'le titre doit depasse un caractre'),
     description: zod_1.z.string().min(1, 'la description doit etre au moins 1 caracteres'),
     photoUrl: zod_1.z.string().nullable().optional(),
-    audioUrl: zod_1.z.string().nullable().optional()
+    audioUrl: zod_1.z.string().nullable().optional(),
+    dateDebut: zod_1.z.union([zod_1.z.string(), zod_1.z.date(), zod_1.z.null()]).optional(),
+    dateFin: zod_1.z.union([zod_1.z.string(), zod_1.z.date(), zod_1.z.null()]).optional()
     // statut : z.string().min(1,'encours par defaut')
 });
 exports.schemaUser = zod_1.z.object({

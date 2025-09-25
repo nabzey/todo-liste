@@ -4,6 +4,8 @@ export declare const sechemTache: z.ZodObject<{
     description: z.ZodString;
     photoUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     audioUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    dateDebut: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodDate, z.ZodNull]>>;
+    dateFin: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodDate, z.ZodNull]>>;
 }, z.core.$strip>;
 export declare const schemaUser: z.ZodObject<{
     name: z.ZodString;

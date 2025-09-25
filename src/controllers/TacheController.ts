@@ -46,13 +46,15 @@ async getAll(req: Request, res: Response) {
       }
     }
 
-    const tacheData = {
+    const tacheData: any = {
       titre: req.body.titre,
       description: req.body.description,
       photoUrl,
       audioUrl,
       statut: req.body.statut || 'EN_COURS'
     };
+    if (req.body.dateDebut) tacheData.dateDebut = new Date(req.body.dateDebut);
+    if (req.body.dateFin) tacheData.dateFin = new Date(req.body.dateFin);
 
     const tache = sechemTache.parse(tacheData);
 
@@ -63,6 +65,7 @@ async getAll(req: Request, res: Response) {
 
     res.json(a);
   } catch (error: any) {
+    console.error('Erreur création tâche:', error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -108,7 +111,9 @@ async getAll(req: Request, res: Response) {
         ...data.data,
         photoUrl,
         audioUrl,
-        statut: req.body.statut // permet de modifier l'état
+        statut: req.body.statut, // permet de modifier l'état
+        dateDebut: req.body.dateDebut ? new Date(req.body.dateDebut) : existing?.dateDebut ?? null,
+        dateFin: req.body.dateFin ? new Date(req.body.dateFin) : existing?.dateFin ?? null
       };
       const u = await service.updateId(id, updateData)
     res.status(200).json(u)

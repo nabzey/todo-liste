@@ -4,7 +4,9 @@ export const sechemTache =z.object({
     titre : z.string().min(1,'le titre doit depasse un caractre'),
     description : z.string().min(1,'la description doit etre au moins 1 caracteres'),
     photoUrl: z.string().nullable().optional(),
-    audioUrl: z.string().nullable().optional()
+    audioUrl: z.string().nullable().optional(),
+    dateDebut: z.union([z.string(), z.date(), z.null()]).optional(),
+    dateFin: z.union([z.string(), z.date(), z.null()]).optional()
     // statut : z.string().min(1,'encours par defaut')
 })
  

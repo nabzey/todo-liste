@@ -47,6 +47,10 @@ class TacheController {
                 audioUrl,
                 statut: req.body.statut || 'EN_COURS'
             };
+            if (req.body.dateDebut)
+                tacheData.dateDebut = new Date(req.body.dateDebut);
+            if (req.body.dateFin)
+                tacheData.dateFin = new Date(req.body.dateFin);
             const tache = validate_1.sechemTache.parse(tacheData);
             const a = await service.createTache({
                 ...tacheData,
@@ -55,6 +59,7 @@ class TacheController {
             res.json(a);
         }
         catch (error) {
+            console.error('Erreur création tâche:', error);
             res.status(400).json({ error: error.message });
         }
     }
@@ -111,7 +116,9 @@ class TacheController {
             ...data.data,
             photoUrl,
             audioUrl,
-            statut: req.body.statut // permet de modifier l'état
+            statut: req.body.statut, // permet de modifier l'état
+            dateDebut: req.body.dateDebut ? new Date(req.body.dateDebut) : existing?.dateDebut ?? null,
+            dateFin: req.body.dateFin ? new Date(req.body.dateFin) : existing?.dateFin ?? null
         };
         const u = await service.updateId(id, updateData);
         res.status(200).json(u);
